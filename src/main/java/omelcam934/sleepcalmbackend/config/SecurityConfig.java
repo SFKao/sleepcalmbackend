@@ -1,4 +1,4 @@
-package omelcam934.sleepcalmbackend.security;
+package omelcam934.sleepcalmbackend.config;
 
 
 import com.nimbusds.jose.jwk.JWK;
@@ -10,13 +10,18 @@ import com.nimbusds.jose.proc.SecurityContext;
 import omelcam934.sleepcalmbackend.config.RsaKeyProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -30,12 +35,21 @@ public class SecurityConfig {
 
     private final RsaKeyProperties rsaKeys;
 
+
+
     public SecurityConfig(RsaKeyProperties rsaKeyProperties){
         this.rsaKeys = rsaKeyProperties;
     }
 
     @Bean
-    public InMemoryUserDetailsManager user() {
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService){
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        return new ProviderManager(daoAuthenticationProvider);
+    }
+
+    @Bean
+    public UserDetailsService user() {
         return new InMemoryUserDetailsManager(
                 User.withUsername("sleepcalmAdmin")
                 .password("{noop}sleep1234")
@@ -49,7 +63,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
