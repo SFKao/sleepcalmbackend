@@ -1,0 +1,1 @@
+docker run --name sleepcalmDB -e MYSQL_ROOT_PASSWORD=stallman -e MYSQL_DATABASE=sleepcalm -e MYSQL_USER=sleepcalmAdmin -e MYSQL_PASSWORD=sleep1234 -v D:/Programacion/sleepcalmbackend/datadb:/var/lib/mysql -p 3306:3306 -d mysql
