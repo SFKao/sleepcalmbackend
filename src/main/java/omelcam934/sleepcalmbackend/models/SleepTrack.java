@@ -15,10 +15,11 @@ public class SleepTrack {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank
     private Date horaDeInicio;
 
     private Date horaDeFin;
+
+    private Date dia;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -56,6 +57,14 @@ public class SleepTrack {
         this.horaDeFin = horaDeFin;
     }
 
+    public Date getDia() {
+        return dia;
+    }
+
+    public void setDia(Date dia) {
+        this.dia = dia;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +83,7 @@ public class SleepTrack {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
                 "horaDeInicio = " + horaDeInicio + ", " +
-                "horaDeFin = " + horaDeFin + ")";
+                "horaDeFin = " + horaDeFin + ", " +
+                "dia = " + dia + ")";
     }
 }
