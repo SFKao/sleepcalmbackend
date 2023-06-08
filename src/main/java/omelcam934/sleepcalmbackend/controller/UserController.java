@@ -42,4 +42,9 @@ public class UserController {
                 new UserDto(user.getUsername(),user.getEmail())
         );
     }
+
+    @GetMapping("/checktoken")
+    public ResponseEntity<?> checkToken(Authentication authentication){
+        return ResponseEntity.ok(true);
+    }
 }

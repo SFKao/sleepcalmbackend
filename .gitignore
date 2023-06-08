@@ -37,3 +37,5 @@ out/
 .vscode/
 
 /datadb
+
+/src/main/resources/application.properties

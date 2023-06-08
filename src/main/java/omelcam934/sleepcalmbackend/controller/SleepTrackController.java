@@ -2,7 +2,7 @@ package omelcam934.sleepcalmbackend.controller;
 
 
 import omelcam934.sleepcalmbackend.dto.SleepTrackDto;
-import omelcam934.sleepcalmbackend.dto.UserDto;
+import omelcam934.sleepcalmbackend.dto.WeekDto;
 import omelcam934.sleepcalmbackend.models.SleepTrack;
 import omelcam934.sleepcalmbackend.models.User;
 import omelcam934.sleepcalmbackend.service.SleepTrackService;
@@ -13,9 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -49,11 +46,11 @@ public class SleepTrackController {
         Date domingo = cal.getTime();
 
         return ResponseEntity.ok(
-                sleepTrackService.findByDiaGreaterThanEqualAndDiaLessThanEqualAndUser_IdEquals
-                (lunes,domingo, user.getId())
-                .stream().map(
-                        sleepTrack -> new SleepTrackDto(sleepTrack.getHoraDeInicio(),sleepTrack.getHoraDeFin(),sleepTrack.getDia())
-                        )
+                new WeekDto(sleepTrackService.findByDiaGreaterThanEqualAndDiaLessThanEqualAndUser_IdEquals
+                                (lunes,domingo, user.getId())
+                        .stream().map(
+                                sleepTrack -> new SleepTrackDto(sleepTrack.getHoraDeInicio(),sleepTrack.getHoraDeFin(),sleepTrack.getDia())
+                        ).toList())
         );
     }
 
@@ -67,7 +64,7 @@ public class SleepTrackController {
         }
         SleepTrack sleepTrack = new SleepTrack();
         sleepTrack.setHoraDeInicio(sleepTrackDto.getHoraDeInicio());
-        sleepTrack.setHoraDeFin(sleepTrack.getHoraDeFin());
+        sleepTrack.setHoraDeFin(sleepTrackDto.getHoraDeFin());
         sleepTrack.setUser(user);
         SleepTrack newSleepTrack = sleepTrackService.create(sleepTrack);
         return ResponseEntity.ok(new SleepTrackDto(newSleepTrack.getHoraDeInicio(),newSleepTrack.getHoraDeFin(),newSleepTrack.getDia()));
@@ -91,13 +88,15 @@ public class SleepTrackController {
     public ResponseEntity<?> getWeek(Authentication authentication, @RequestParam(name = "diaSemana") @DateTimeFormat(pattern = "yyyy-MM-dd_HH:mm:ss") Date diaSemana){
         User user = getUser(authentication);
         Semana semana = getSemana(diaSemana);
+
         return ResponseEntity.ok(
-                sleepTrackService
+                new WeekDto(sleepTrackService
                         .findByDiaGreaterThanEqualAndDiaLessThanEqualAndUser_IdEquals
-                        (semana.lunes(),semana.domingo(), user.getId())
+                                (semana.lunes(),semana.domingo(), user.getId())
                         .stream().map(
                                 sleepTrack -> new SleepTrackDto(sleepTrack.getHoraDeInicio(),sleepTrack.getHoraDeFin(),sleepTrack.getDia())
-                        )
+                        ).toList()
+                )
         );
     }
 

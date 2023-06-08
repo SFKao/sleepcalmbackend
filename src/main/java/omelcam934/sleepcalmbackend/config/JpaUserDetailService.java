@@ -15,7 +15,7 @@ import java.util.Set;
 @Service
 public class JpaUserDetailService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public JpaUserDetailService(UserRepository userRepository) {
         this.userRepository = userRepository;
